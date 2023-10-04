@@ -110,6 +110,42 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         return res;
     }
 
+    async deleteFiles(files: string[] | drive_v3.Schema$File[]) {
+
+        let file_ids = []
+
+        if (typeof files[0] === 'string') {
+            file_ids = files;
+        } else {
+            file_ids = (files as DriveFile[]).map(file => file.id)
+        }
+
+
+        for (const file_id of file_ids) {
+            this.drive.files.delete({
+                fileId: file_id
+            })
+        }
+
+        return true;
+    }
+
+    async getFilesByIds(file_ids: string[]) {
+
+        const files = []
+
+        for (const file_id of file_ids) {
+            const file = (await this.drive.files.get({
+                fileId: file_id,
+                fields: 'parents, name'
+            })).data
+
+            files.push(file);
+        }
+
+        return files;
+    }
+
     async getFolderByName(folder_name: string): Promise<drive_v3.Schema$File> {
 
         const res = await this.drive.files.list({
