@@ -13,7 +13,7 @@ export default class Logger {
 
     log(args: any[] | any, tag: string = 'info') {
         if (this.enabled && Logger.filtersMatch(this.filter, tag)) {
-            console.log(this.prefix ? (this.prefix + ': ') : null, ...args)
+            console.log(this.prefix ? (this.prefix + ': ') : null, !Array.isArray(args) ? args : [...args])
         }
     }
 
