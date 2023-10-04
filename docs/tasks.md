@@ -12,7 +12,7 @@ This document describes tasks to be done for the server module of FileSorter app
 
 ## Change 'moveFiles()' method to accept folder id instead of folder name
 
-## 'Create' action
+
 
 ## Filesize condition
 
@@ -27,3 +27,5 @@ This document describes tasks to be done for the server module of FileSorter app
 ## ~~'Delete' action for Sorter class~~
 
 # Cancelled
+
+## ~~'Create' action~~ (Out of scope)

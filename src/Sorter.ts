@@ -17,14 +17,7 @@ export type DeleteAction = {
     type: 'delete'
 }
 
-export type CreateAction = {
-    type: 'create',
-    filename: string,
-    filetype: 'folder' | 'file',
-    location: string
-}
-
-export type SortAction = MoveAction | DeleteAction | CreateAction
+export type SortAction = MoveAction | DeleteAction
 
 export type File = {
     id?: string,
