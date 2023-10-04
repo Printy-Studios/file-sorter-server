@@ -4,6 +4,8 @@ This document describes tasks to be done for the server module of FileSorter app
 
 # Todo
 
+## DriveSorter - add support for Files array not just string array in moveFiles()/deleteFiles()
+
 ## Add proper response in DriveSorter.moveFiles()
 
 ## DriveSorter.moveFiles() - if File types are passed, check if they have the 'parents' property defined
@@ -15,8 +17,6 @@ This document describes tasks to be done for the server module of FileSorter app
 ## 'Limit' for Sorter.sort()
 
 ## 'parent folder name' condition
-
-## DriveSorter - add support for Files array not just string array in moveFiles()/deleteFiles()
 
 # Done
 
