@@ -14,6 +14,8 @@ This document describes tasks to be done for the server module of FileSorter app
 
 ## 'parent folder name' condition
 
+## DriveSorter - add support for Files array not just string array in moveFiles()/deleteFiles()
+
 # Done
 
 # Cancelled
