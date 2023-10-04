@@ -93,7 +93,6 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
     }
 
     async moveFiles(files: drive_v3.Schema$File[] | string[], target_folder_id: string) {
-        // const target_folder = await this.getFolderByName(target_folder_name);
         const target_folder = await this.getFileById(target_folder_id);
         if(target_folder.mimeType !== FOLDER_MIME) {
             throw new Error('Provided folder ID is not for a folder');
@@ -200,7 +199,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
     async getFileById(file_id: string): Promise<DriveFile> {
         const file = (await this.drive.files.get({
             fileId: file_id,
-            fields: 'parents, name'
+            fields: 'parents, name, mimeType'
         })).data
 
         return file
