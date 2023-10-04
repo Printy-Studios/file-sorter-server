@@ -82,24 +82,36 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
     async moveFiles(files: drive_v3.Schema$File[] | string[], target_folder_name: string) {
         const target_folder = await this.getFolderByName(target_folder_name);
-    
-        if(typeof files[0] !== 'string') {
-            throw new Error('Only file ids are currently supported');
+
+        if(typeof files[0] === 'string') {
+            
+            files = await this.getFilesByIds(files as string[]);
+            
+            //throw new Error('Only file ids are currently supported');
+        } else {
+            const invalid_files = []
+            for (const file of files as DriveFile[]) {
+                if (!file.parents) {
+                   //
+                   invalid_files.push(file.id)
+                }
+            }
+            if(invalid_files.length > 0) {
+                throw new Error(
+                    "Cannot move files because the following files are missing the 'parents' property: " + 
+                    invalid_files.join(', ')   
+                ) 
+            }
         }
 
         const q = `'${target_folder.id}' in parents` 
     
         const res = [];
     
-        for (const file_id of files as string[]) {
-            const file = (await this.drive.files.get({
-                fileId: file_id,
-                fields: 'parents, name'
-            })).data
-
+        for (const file of files as DriveFile[]) {
             const update_res = await this.drive.files.update({
                 uploadType: 'multipart',
-                fileId: file_id,
+                fileId: file.id,
                 addParents: target_folder.id,
                 removeParents: file.parents.join(',')
             })
