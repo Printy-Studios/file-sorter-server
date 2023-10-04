@@ -27,14 +27,14 @@ export type CreateAction = {
 export type SortAction = MoveAction | DeleteAction | CreateAction
 
 export type File = {
-    id: string,
-    name: string,
-    parents: string[]
+    id?: string,
+    name?: string,
+    // parents: string[]
 }
 
 const SUPPORTED_ACTIONS = ['move', 'delete']
 
-export default abstract class Sorter<FileT> {
+export default abstract class Sorter<FileT extends File> {
 
     logger;
 
@@ -47,9 +47,9 @@ export default abstract class Sorter<FileT> {
         this.logger.log(['Retrieving files by conditions: ', conditions]);
         const files = await this.getFilesByConditions(conditions);
 
-        const file_ids = files.map((file) => file.id);
+        //const file_ids = files.map((file) => file.id);
 
-        this.logger.log(['Retrieved files: ', file_ids])
+        this.logger.log(['Retrieved files: ', files.map(file => file.id)])
 
         let res = null;
 
@@ -59,9 +59,9 @@ export default abstract class Sorter<FileT> {
             throw new Error(`Only ${SUPPORTED_ACTIONS.join(', ')} action types currently supported`);
         }
         if (action.type === 'move') {
-            res = await this.moveFiles(file_ids, action.to);
+            res = await this.moveFiles(files, action.to);
         } else if (action.type === 'delete') {
-            res = await this.deleteFiles(file_ids)
+            res = await this.deleteFiles(files)
         }
 
         return res;
@@ -72,7 +72,7 @@ export default abstract class Sorter<FileT> {
      * Must be async
      * @param conditions 
      */
-    abstract getFilesByConditions(conditions: SortConditionGroup[]): Promise<File[]>
+    abstract getFilesByConditions(conditions: SortConditionGroup[]): Promise<FileT[]>
 
     /**
      * Move files to the target folder
