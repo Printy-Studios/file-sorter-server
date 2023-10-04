@@ -5,8 +5,8 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
     drive: drive_v3.Drive = null;
 
-    constructor(driveInstance) {
-        super();
+    constructor(driveInstance, config) {
+        super(config);
 
         this.drive = driveInstance
     }
@@ -68,8 +68,6 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
                 is_first_group = false
             }
         }
-
-        console.log(q)
         
         const res = await this.drive.files.list({
             q,
@@ -87,10 +85,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
             throw new Error('Only file ids are currently supported');
         }
 
-        console.log(target_folder)
         const q = `'${target_folder.id}' in parents` 
-        console.log(q);
-        
     
         const res = [];
     
@@ -100,17 +95,12 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
                 fields: 'parents, name'
             })).data
 
-            console.log(file)
-
             const update_res = await this.drive.files.update({
                 uploadType: 'multipart',
                 fileId: file_id,
                 addParents: target_folder.id,
                 removeParents: file.parents.join(',')
             })
-    
-            console.log('Moved file: ');
-            console.log(update_res);
     
             res.push(update_res);
         }

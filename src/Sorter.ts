@@ -1,3 +1,4 @@
+import Logger from './Logger'
 
 export type SortCondition = {
     premise: 'name' | 'filesize' | 'type',
@@ -35,14 +36,20 @@ const SUPPORTED_ACTIONS = ['move', 'delete']
 
 export default abstract class Sorter<FileT> {
 
+    logger;
+
+    constructor( { enable_logs, log_filters} ) {
+        this.logger = new Logger(enable_logs, 'Sorter')
+        this.logger.filter = log_filters
+    }
 
     async sort(conditions: SortConditionGroup[], action: MoveAction) {
+        this.logger.log(['Retrieving files by conditions: ', conditions]);
         const files = await this.getFilesByConditions(conditions);
 
         const file_ids = files.map((file) => file.id);
 
-
-        console.log(file_ids)
+        this.logger.log(['Retrieved files: ', file_ids])
 
         let res = null;
 

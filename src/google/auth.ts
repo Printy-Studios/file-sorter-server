@@ -2,6 +2,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { google } from 'googleapis';
 import { authenticate } from '@google-cloud/local-auth';
+import Logger from 'Logger';
 
 const readFile = (path: string) => {
     const content = fs.readFileSync(path, { encoding: 'utf-8'} );
@@ -53,23 +54,3 @@ export async function authorize() {
     }
     return client;
 }
-
-async function listFiles(authClient) {
-    const drive = google.drive({ version: 'v3', auth: authClient})
-    const res = await drive.files.list({
-        pageSize: 10,
-        fields: 'nextPageToken, files(id, name)'
-    });
-    const files = res.data.files;
-    if(files.length === 0) {
-        console.log('No files found');
-        return;
-    }
-
-    console.log('Files:');
-    files.map( file => {
-        console.log(file.name)
-    })
-}
-
-//authorize().then(listFiles).catch(console.error)

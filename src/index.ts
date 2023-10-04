@@ -1,6 +1,15 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
+import Logger from 'Logger';
 import { moveFiles, authorize, driveInstance, GoogleDriveSorter } from './google'
+
+const ENABLE_LOGS = true
+const SORTER_CONFIG = {
+    enable_logs: true,
+    logs_filter: null
+}
+
+const logger = new Logger(ENABLE_LOGS, 'Server')
 
 const app = express();
 
@@ -26,23 +35,24 @@ app.post('/api/sort', async (req: Request, res: Response, next) => {
     const {
         conditions,
         action
-    } = req.body
-//
-    console.log('Sorting google drive folder')
+    } = req.body;
+
+    logger.log('Sorting cloud storage folder', 'api/sort');
     if(!googleClient) {
+        logger.log('Could not authorize Google account');
         res.send('Could not authorize Google account').status(401);
         next();
     }
 
     const drive = driveInstance(googleClient)
 
-    const driveSorter = new GoogleDriveSorter(drive);
+    const driveSorter = new GoogleDriveSorter(drive, SORTER_CONFIG);
 
 
     const files = await driveSorter.sort(conditions, action)
 
-    console.log('Moving files')
-    //const files = await moveFiles(drive, [], 'Blog')
+    logger.log('Sorted files')
+
     res.json(files)
 })
 
