@@ -121,13 +121,28 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         }
 
 
-        for (const file_id of file_ids) {
-            this.drive.files.delete({
-                fileId: file_id
-            })
+        const res = {
+            successful: [],
+            failing: []
         }
 
-        return true;
+        for (const file_id of file_ids) {
+            try {
+                const update_res = await this.drive.files.update({
+                    fileId: file_id,
+                    requestBody: {
+                        trashed: true
+                    }
+                });
+                res.successful.push(file_id)
+            } catch {
+                this.logger.log('Failed to delete file ' + file_id)
+                res.failing.push(file_id)
+            }
+            
+        }
+
+        return res;
     }
 
     async getFilesByIds(file_ids: string[]) {
