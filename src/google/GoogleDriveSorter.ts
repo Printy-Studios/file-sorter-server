@@ -78,7 +78,9 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
                 is_first_group = false
             }
         }
-        
+
+        q += ' and trashed = false';
+
         const res = await this.drive.files.list({
             q,
             pageSize: 1000,
