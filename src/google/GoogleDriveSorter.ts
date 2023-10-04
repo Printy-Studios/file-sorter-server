@@ -11,6 +11,8 @@ const fileStr = (file: DriveFile) => {
     })
 }
 
+const FOLDER_MIME = 'application/vnd.google-apps.folder';
+
 export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
     drive: drive_v3.Drive = null;
@@ -90,8 +92,13 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         return res.data.files as File[]
     }
 
-    async moveFiles(files: drive_v3.Schema$File[] | string[], target_folder_name: string) {
-        const target_folder = await this.getFolderByName(target_folder_name);
+    async moveFiles(files: drive_v3.Schema$File[] | string[], target_folder_id: string) {
+        // const target_folder = await this.getFolderByName(target_folder_name);
+        const target_folder = await this.getFileById(target_folder_id);
+        if(target_folder.mimeType !== FOLDER_MIME) {
+            throw new Error('Provided folder ID is not for a folder');
+        }
+
 
         if(typeof files[0] === 'string') {
             
@@ -174,7 +181,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         return res;
     }
 
-    async getFilesByIds(file_ids: string[]) {
+    async getFilesByIds(file_ids: string[]): Promise<DriveFile[]> {
 
         const files = []
 
@@ -190,8 +197,16 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         return files;
     }
 
-    async getFolderByName(folder_name: string): Promise<drive_v3.Schema$File> {
+    async getFileById(file_id: string): Promise<DriveFile> {
+        const file = (await this.drive.files.get({
+            fileId: file_id,
+            fields: 'parents, name'
+        })).data
 
+        return file
+    }
+
+    async getFolderByName(folder_name: string): Promise<drive_v3.Schema$File> {
         const res = await this.drive.files.list({
             q: `mimeType = 'application/vnd.google-apps.folder' and name = '${folder_name}'`,
             pageSize: 1,
@@ -201,6 +216,5 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         const folder = res.data.files[0];
     
         return folder
-    
     }
 }

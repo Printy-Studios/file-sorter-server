@@ -79,7 +79,7 @@ export default abstract class Sorter<FileT extends File> {
      * 
      * @return { FileT[] } Array of files that were moved
      */
-    abstract moveFiles(files: FileT[] | string[], target_folder: string): Promise<SortResponse>;
+    abstract moveFiles(files: FileT[] | string[], target_folder_id: string): Promise<SortResponse>;
 
     /**
      * Delete files
