@@ -4,7 +4,7 @@ This document describes tasks to be done for the server module of FileSorter app
 
 # Todo
 
-## 'Delete' action
+## deleteFiles() method in DriveSorter
 
 ## 'Create' action
 
@@ -17,5 +17,7 @@ This document describes tasks to be done for the server module of FileSorter app
 ## DriveSorter - add support for Files array not just string array in moveFiles()/deleteFiles()
 
 # Done
+
+## ~~'Delete' action for Sorter class~~
 
 # Cancelled
