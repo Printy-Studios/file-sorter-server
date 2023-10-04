@@ -81,7 +81,7 @@ export default abstract class Sorter<FileT> {
      * 
      * @return { FileT[] } Array of files that were moved
      */
-    abstract moveFiles(files: FileT[] | string[], target_folder: string): FileT[];
+    abstract moveFiles(files: FileT[] | string[], target_folder: string): Promise<FileT[]>;
 
     /**
      * Delete files
