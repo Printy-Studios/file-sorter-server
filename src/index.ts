@@ -1,8 +1,8 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import Logger from 'Logger';
-import { moveFiles, authorize, driveInstance, GoogleDriveSorter } from './google'
-
+import Logger from './Logger';
+import { authorize, driveInstance, GoogleDriveSorter } from './google'
+//
 const ENABLE_LOGS = true
 const SORTER_CONFIG = {
     enable_logs: true,
