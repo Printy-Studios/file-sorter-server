@@ -4,8 +4,6 @@ This document describes tasks to be done for the server module of FileSorter app
 
 # Todo
 
-## Change 'moveFiles()' method to accept folder id instead of folder name
-
 ## Filesize condition
 
 ## 'Limit' for Sorter.sort()
@@ -13,6 +11,8 @@ This document describes tasks to be done for the server module of FileSorter app
 ## 'parent folder name' condition
 
 # Done
+
+## ~~Change 'moveFiles()' method to accept folder id instead of folder name~~
 
 ## ~~DriveSorter - add support for Files array not just string array in moveFiles()/deleteFiles()~~
 
