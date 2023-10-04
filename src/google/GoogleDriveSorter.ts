@@ -1,7 +1,15 @@
 import { drive_v3 } from 'googleapis';
-import Sorter, { SortCondition, SortConditionGroup, File } from '../Sorter';
+import { file } from 'googleapis/build/src/apis/file';
+import Sorter, { SortCondition, SortConditionGroup, File, SortResponse } from '../Sorter';
 
 type DriveFile = drive_v3.Schema$File;
+
+const fileStr = (file: DriveFile) => {
+    return JSON.stringify({
+        id: file.id,
+        name: file.name
+    })
+}
 
 export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
@@ -74,7 +82,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         const res = await this.drive.files.list({
             q,
             pageSize: 1000,
-            fields: 'nextPageToken, files(id, name)'
+            fields: 'nextPageToken, files(parents, id, name)'
         })
 
         return res.data.files as File[]
@@ -106,17 +114,24 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
         const q = `'${target_folder.id}' in parents` 
     
-        const res = [];
+        const res: SortResponse = {
+            successful: [],
+            failed: []
+        };
     
         for (const file of files as DriveFile[]) {
-            const update_res = await this.drive.files.update({
-                uploadType: 'multipart',
-                fileId: file.id,
-                addParents: target_folder.id,
-                removeParents: file.parents.join(',')
-            })
-    
-            res.push(update_res);
+            try {
+                const update_res = await this.drive.files.update({
+                    uploadType: 'multipart',
+                    fileId: file.id,
+                    addParents: target_folder.id,
+                    removeParents: file.parents.join(',')
+                })
+                res.successful.push(file.id)
+            } catch (e) {
+                console.error(`Could not move file ${fileStr(file)} to folder ${fileStr(target_folder)}`)
+                res.failed.push(file.id)
+            }
         }
     
         return res;

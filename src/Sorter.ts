@@ -32,6 +32,11 @@ export type File = {
     // parents: string[]
 }
 
+export type SortResponse = {
+    successful: string[],
+    failed: string[]
+}
+
 const SUPPORTED_ACTIONS = ['move', 'delete']
 
 export default abstract class Sorter<FileT extends File> {
@@ -81,7 +86,7 @@ export default abstract class Sorter<FileT extends File> {
      * 
      * @return { FileT[] } Array of files that were moved
      */
-    abstract moveFiles(files: FileT[] | string[], target_folder: string): Promise<FileT[]>;
+    abstract moveFiles(files: FileT[] | string[], target_folder: string): Promise<SortResponse>;
 
     /**
      * Delete files
@@ -89,5 +94,5 @@ export default abstract class Sorter<FileT extends File> {
      * 
      * @return true on success, throws error on failure
      */
-    abstract deleteFiles(files: FileT[] | string[]);
+    abstract deleteFiles(files: FileT[] | string[]): Promise<SortResponse>;
 }
