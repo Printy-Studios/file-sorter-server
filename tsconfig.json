@@ -1,6 +1,11 @@
 {
     "compilerOptions": {
         "rootDir": "./src",
-        "outDir": "./dist"
+        "baseUrl": "./src",
+        "paths": {
+            "@*": [ "./src/*" ]
+        },
+        "outDir": "./dist",
+        "types": ["node"]
     }
 }
