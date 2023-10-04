@@ -31,6 +31,8 @@ export type File = {
     parents: string[]
 }
 
+const SUPPORTED_ACTIONS = ['move', 'delete']
+
 export default abstract class Sorter<FileT> {
 
 
@@ -44,10 +46,13 @@ export default abstract class Sorter<FileT> {
 
         let res = null;
 
+        
+
+        if(!SUPPORTED_ACTIONS.includes(action.type)) {
+            throw new Error(`Only ${SUPPORTED_ACTIONS.join(', ')} action types currently supported`);
+        }
         if(action.type === 'move') {
             res = await this.moveFiles(file_ids, action.to);
-        } else {
-            throw new Error("Only 'move' action type currently supported");
         }
 
         return res;
