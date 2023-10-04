@@ -12,7 +12,18 @@ export type MoveAction = {
     to: string
 }
 
-export type SortAction = MoveAction
+export type DeleteAction = {
+    type: 'delete'
+}
+
+export type CreateAction = {
+    type: 'create',
+    filename: string,
+    filetype: 'folder' | 'file',
+    location: string
+}
+
+export type SortAction = MoveAction | DeleteAction | CreateAction
 
 export type File = {
     id: string,
