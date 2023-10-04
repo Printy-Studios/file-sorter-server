@@ -4,8 +4,6 @@ This document describes tasks to be done for the server module of FileSorter app
 
 # Todo
 
-
-
 ## 'Delete' action
 
 ## 'Create' action
@@ -13,6 +11,8 @@ This document describes tasks to be done for the server module of FileSorter app
 ## Filesize condition
 
 ## 'Limit' for Sorter.sort()
+
+## 'parent folder name' condition
 
 # Done
 
