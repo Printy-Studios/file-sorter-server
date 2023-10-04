@@ -123,7 +123,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
         const res = {
             successful: [],
-            failing: []
+            failed: []
         }
 
         for (const file_id of file_ids) {
