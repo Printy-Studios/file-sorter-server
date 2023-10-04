@@ -10,6 +10,8 @@ This document describes tasks to be done for the server module of FileSorter app
 
 ## DriveSorter.moveFiles() - if File types are passed, check if they have the 'parents' property defined
 
+## Change 'moveFiles()' method to accept folder id instead of folder name
+
 ## 'Create' action
 
 ## Filesize condition
