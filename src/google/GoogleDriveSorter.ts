@@ -1,6 +1,8 @@
 import { drive_v3 } from 'googleapis';
 import Sorter, { SortCondition, SortConditionGroup, File } from '../Sorter';
-//
+
+type DriveFile = drive_v3.Schema$File;
+
 export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
     drive: drive_v3.Drive = null;
