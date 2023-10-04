@@ -137,7 +137,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
                 res.successful.push(file_id)
             } catch {
                 this.logger.log('Failed to delete file ' + file_id)
-                res.failing.push(file_id)
+                res.failed.push(file_id)
             }
             
         }
