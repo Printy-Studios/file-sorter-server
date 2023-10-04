@@ -58,8 +58,10 @@ export default abstract class Sorter<FileT> {
         if(!SUPPORTED_ACTIONS.includes(action.type)) {
             throw new Error(`Only ${SUPPORTED_ACTIONS.join(', ')} action types currently supported`);
         }
-        if(action.type === 'move') {
+        if (action.type === 'move') {
             res = await this.moveFiles(file_ids, action.to);
+        } else if (action.type === 'delete') {
+            res = await this.deleteFiles(file_ids)
         }
 
         return res;
@@ -73,9 +75,19 @@ export default abstract class Sorter<FileT> {
     abstract getFilesByConditions(conditions: SortConditionGroup[]): Promise<File[]>
 
     /**
-     * Move files with associated ids to the target folder
-     * @param { string[] }  files        Array of files or file ids to move
-     * @param { string }    target_folder   Name of target folder
+     * Move files to the target folder
+     * @param { FileT[] | string[] }    files           Array of files or file ids to move
+     * @param { string }                target_folder   Name of target folder
+     * 
+     * @return { FileT[] } Array of files that were moved
      */
-    abstract moveFiles(files: FileT[] | string[], target_folder: string);
+    abstract moveFiles(files: FileT[] | string[], target_folder: string): FileT[];
+
+    /**
+     * Delete files
+     * @param { FileT[] | string[] } files Array of files or file ids to delete
+     * 
+     * @return true on success, throws error on failure
+     */
+    abstract deleteFiles(files: FileT[] | string[]);
 }
