@@ -24,7 +24,7 @@ export default abstract class Sorter<FileT extends File> {
         this.logger.filter = log_filters
     }
 
-    async sort(conditions: ConditionGroup[], action: MoveAction) {
+    async sort(conditions: ConditionGroup[], action: SortAction) {
         this.logger.log(['Retrieving files by conditions: ', conditions]);
         const files = await this.getFilesByConditions(conditions);
 
