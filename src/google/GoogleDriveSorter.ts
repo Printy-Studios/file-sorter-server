@@ -1,6 +1,7 @@
 import { drive_v3 } from 'googleapis';
 import { file } from 'googleapis/build/src/apis/file';
-import Sorter, { SortCondition, SortConditionGroup, File, SortResponse } from '../Sorter';
+import Sorter, { File, SortResponse } from '../Sorter';
+import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition'
 
 type DriveFile = drive_v3.Schema$File;
 
@@ -23,7 +24,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         this.drive = driveInstance
     }
 
-    conditionToQuery(condition: SortCondition) {
+    conditionToQuery(condition: Condition) {
         const supported_premises = ['name', 'type']
 
         const { premise, value, condition: cond } = condition
@@ -52,8 +53,8 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         }
     }
 
-    async getFilesByConditions(conditions: SortConditionGroup[]): Promise<File[]> {
-        const condition = conditions[0][0];
+    async getFilesByConditions(conditions: ConditionGroup[]): Promise<File[]> {
+        //const condition = conditions[0][0];
         let q = '';
 
         let is_first_group = true;
@@ -127,6 +128,8 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
             failed: []
         };
     
+        console.log('moving to ', target_folder)
+
         for (const file of files as DriveFile[]) {
             try {
                 const update_res = await this.drive.files.update({
@@ -199,7 +202,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
     async getFileById(file_id: string): Promise<DriveFile> {
         const file = (await this.drive.files.get({
             fileId: file_id,
-            fields: 'parents, name, mimeType'
+            fields: 'parents, name, mimeType, id'
         })).data
 
         return file

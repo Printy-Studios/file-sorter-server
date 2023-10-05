@@ -1,12 +1,6 @@
 import Logger from './Logger'
+import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition'
 
-export type SortCondition = {
-    premise: 'name' | 'filesize' | 'type',
-    condition: '=' | '<' | '>' | 'contains',
-    value: string|number
-}
-
-export type SortConditionGroup = SortCondition[]
 
 export type MoveAction = {
     type: 'move',
@@ -41,7 +35,7 @@ export default abstract class Sorter<FileT extends File> {
         this.logger.filter = log_filters
     }
 
-    async sort(conditions: SortConditionGroup[], action: MoveAction) {
+    async sort(conditions: ConditionGroup[], action: MoveAction) {
         this.logger.log(['Retrieving files by conditions: ', conditions]);
         const files = await this.getFilesByConditions(conditions);
 
@@ -70,7 +64,7 @@ export default abstract class Sorter<FileT extends File> {
      * Must be async
      * @param conditions 
      */
-    abstract getFilesByConditions(conditions: SortConditionGroup[]): Promise<FileT[]>
+    abstract getFilesByConditions(conditions: ConditionGroup[]): Promise<FileT[]>
 
     /**
      * Move files to the target folder
