@@ -36,7 +36,7 @@ app.post('/api/sort', async (req: Request, res: Response, next) => {
             conditions,
             action
         } = req.body;
-    
+
         logger.log('Sorting cloud storage folder', 'api/sort');
         if(!googleClient) {
             logger.log('Could not authorize Google account');
@@ -58,6 +58,7 @@ app.post('/api/sort', async (req: Request, res: Response, next) => {
         res.json({
             message: e.message
         }).status(500)
+        console.error(e)
     }
     
 })
