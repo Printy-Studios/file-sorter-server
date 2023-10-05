@@ -2,7 +2,7 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import Logger from './Logger';
 import { authorize, driveInstance, GoogleDriveSorter } from './google'
-//
+
 const ENABLE_LOGS = true
 const SORTER_CONFIG = {
     enable_logs: true,
@@ -13,7 +13,7 @@ const logger = new Logger(ENABLE_LOGS, 'Server')
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 let googleClient = null;
 
