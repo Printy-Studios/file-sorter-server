@@ -1,17 +1,6 @@
 import Logger from './Logger'
 import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition'
-
-
-export type MoveAction = {
-    type: 'move',
-    to: string
-}
-
-export type DeleteAction = {
-    type: 'delete'
-}
-
-export type SortAction = MoveAction | DeleteAction
+import { SortAction } from '@printy/file-sorter-common/types/SortAction'
 
 export type File = {
     id?: string,
