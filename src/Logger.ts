@@ -2,6 +2,8 @@ export type LogFilter = string[] | string | null | undefined
 
 export default class Logger {
 
+    static DEFAULT_TAG = 'info'
+
     enabled: boolean = true
     prefix: string
     filter: LogFilter = 'info'
@@ -13,13 +15,23 @@ export default class Logger {
 
     log(args: any[] | any, tag: string = 'info') {
         if (this.enabled && Logger.filtersMatch(this.filter, tag)) {
+            const prefixStr = Logger.makePrefixStr(this.prefix)
+            const filterStr = Logger.makeFilterStr(tag)
             if(Array.isArray(args)) {
-                console.log(this.prefix ? (this.prefix + ': ') : null, ...args)
+                console.log(prefixStr, ...args, filterStr)
             } else {
-                console.log(this.prefix ? (this.prefix + ': ') : null, args)
+                console.log(prefixStr, args, filterStr)
             }
             
         }
+    }
+
+    static makeFilterStr(filter: string) {
+        return '[' + filter + ']'
+    }
+
+    static makePrefixStr(prefix: string) {
+        return prefix ? (prefix + ': ') : null
     }
 
     static filtersMatch(filter1: LogFilter, filter2: LogFilter) {
