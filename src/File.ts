@@ -1,6 +1,6 @@
 
 export type File = {
-    id?: string,
+    id: string, //Id should be required
     name?: string,
     // parents: string[]
 }
