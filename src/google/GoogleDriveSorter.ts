@@ -1,16 +1,9 @@
 import { drive_v3 } from 'googleapis';
-import { file } from 'googleapis/build/src/apis/file';
-import Sorter, { File, SortResponse } from '../Sorter';
+import Sorter, {SortResponse } from '../Sorter';
 import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition'
+import { fileStr, File } from 'File'
 
 type DriveFile = drive_v3.Schema$File;
-
-const fileStr = (file: DriveFile) => {
-    return JSON.stringify({
-        id: file.id,
-        name: file.name
-    })
-}
 
 const FOLDER_MIME = 'application/vnd.google-apps.folder';
 

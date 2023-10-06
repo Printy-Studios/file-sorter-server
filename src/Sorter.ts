@@ -1,12 +1,8 @@
 import Logger from './Logger'
 import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition'
 import { SortAction } from '@printy/file-sorter-common/types/SortAction'
+import { File } from 'File'
 
-export type File = {
-    id?: string,
-    name?: string,
-    // parents: string[]
-}
 
 export type SortResponse = {
     successful: string[],
