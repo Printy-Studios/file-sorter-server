@@ -1,9 +1,10 @@
-import { authorize } from './auth';
+import { auth, localAuth } from './auth';
 import driveInstance from './driveInstance';
 import GoogleDriveSorter from './GoogleDriveSorter'
 
 export {
-    authorize,
+    auth,
+    localAuth,
     driveInstance,
     GoogleDriveSorter
 }

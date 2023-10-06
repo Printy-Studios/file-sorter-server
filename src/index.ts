@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import Logger from './Logger';
-import { authorize, driveInstance, GoogleDriveSorter } from './google'
+import { localAuth, driveInstance, GoogleDriveSorter } from './google'
 
 const ENABLE_LOGS = true
 const SORTER_CONFIG = {
@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 8000;
 
 let googleClient = null;
 
-authorize()
+localAuth()
     .then((client) => {
         googleClient = client;
     })
