@@ -8,5 +8,8 @@
         "outDir": "./dist",
         "types": ["node"]
     },
-    "exclude": ["tests"]
+    "exclude": ["tests"],
+    "typeAcquisition": {
+        "include": [ "jest" ]
+    }
 }
