@@ -18,6 +18,7 @@ const SCOPES = [
 
 const TOKEN_PATH = path.join(process.cwd(), 'secret/token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'secret/credentials.json');
+const SERVICE_CREDENTIALS_PATH = path.join(process.cwd(), 'secret/service-account-credentials.json')
 
 function loadSavedCredentialsIfExist() {
     try {
