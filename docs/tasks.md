@@ -4,6 +4,8 @@ This document describes tasks to be done for the server module of FileSorter app
 
 # Todo
 
+## Rewrite DriveSorter to have File type with `id` property be required
+
 ## Start writing tests
 
 ## DriveSorter.movefiles(): Don't move files that are already in the target folder
