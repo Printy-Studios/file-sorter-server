@@ -3,6 +3,8 @@ import * as fs from 'fs'
 import { google } from 'googleapis';
 import { authenticate } from '@google-cloud/local-auth';
 import Logger from 'Logger';
+import { AuthClient } from 'google-auth-library';
+import { GoogleAuth, JSONClient } from 'google-auth-library/build/src/auth/googleauth';
 
 const readFile = (path: string) => {
     const content = fs.readFileSync(path, { encoding: 'utf-8'} );
@@ -46,8 +48,8 @@ function saveCredentials(client) {
     fs.writeFileSync(TOKEN_PATH, payload);
 }
 
-export async function authorize() {
-    let client: any = loadSavedCredentialsIfExist();
+export async function localAuth() {
+    let client: AuthClient = loadSavedCredentialsIfExist();
     if (client) {
         return client;
     }
@@ -58,5 +60,18 @@ export async function authorize() {
     if(client.credentials) {
         saveCredentials(client);
     }
+    return client;
+}
+
+export async function auth() {
+    const client = new google.auth.GoogleAuth({
+        keyFile: SERVICE_CREDENTIALS_PATH,
+        scopes: SCOPES
+    })
+    
+    if(!client) {
+        throw new Error('Failed to authorize Google service account')
+    }
+
     return client;
 }
