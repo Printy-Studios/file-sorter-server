@@ -75,4 +75,10 @@ export default abstract class Sorter<FileT extends File> {
      * @return true on success, throws error on failure
      */
     abstract deleteFiles(files: FileT[] | string[]): Promise<SortResponse>;
+
+    /**
+     * Validate whether provided files match the FileT schema
+     */
+    abstract validateFiles(files: FileT[]): FileT[];
+
 }
