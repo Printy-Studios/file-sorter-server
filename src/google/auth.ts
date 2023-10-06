@@ -27,6 +27,12 @@ function loadSavedCredentialsIfExist() {
     }
 }
 
+function readFileJSON(file_path: string) {
+    const content = readFile(file_path);
+    const json = JSON.parse(content);
+    return json;
+}
+
 function saveCredentials(client) {
     const content = readFile(CREDENTIALS_PATH)
     const keys = JSON.parse(content);
