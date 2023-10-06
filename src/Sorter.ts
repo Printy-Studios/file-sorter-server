@@ -45,6 +45,14 @@ export default abstract class Sorter<FileT extends File> {
     }
 
     /**
+     * Enable/disable logs
+     * @param { boolean } enabled 
+     */
+    setLogs(enabled: boolean) {
+        this.logger.enabled = enabled
+    }
+
+    /**
      * Retrieve files according to conditions
      * Must be async
      * @param conditions 
