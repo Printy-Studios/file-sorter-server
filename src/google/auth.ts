@@ -34,7 +34,7 @@ function readFileJSON(file_path: string) {
 }
 
 function saveCredentials(client) {
-    const content = readFile(CREDENTIALS_PATH)
+    const content = readFile(CREDENTIALS_PATH);
     const keys = JSON.parse(content);
     const key = keys.installed || keys.web;
     const payload = JSON.stringify({
