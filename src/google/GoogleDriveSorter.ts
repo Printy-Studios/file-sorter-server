@@ -1,7 +1,7 @@
 import { drive_v3 } from 'googleapis';
 import Sorter, {SortResponse } from '../Sorter';
-import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition'
-import { fileStr, File } from 'File'
+import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition';
+import { fileStr, File } from 'File';
 
 type DriveFile = drive_v3.Schema$File;
 
@@ -14,13 +14,13 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
     constructor(driveInstance, config) {
         super(config);
 
-        this.drive = driveInstance
+        this.drive = driveInstance;
     }
 
     conditionToQuery(condition: Condition) {
-        const supported_premises = ['name', 'type']
+        const supported_premises = ['name', 'type'];
 
-        const { premise, value, condition: cond } = condition
+        const { premise, value, condition: cond } = condition;
 
         if (supported_premises.includes(condition.premise)) {
 
@@ -38,11 +38,11 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
                 }
             }
             if(premise === 'name') {
-                return `name ${condition.condition} '${condition.value}'`
+                return `name ${condition.condition} '${condition.value}'`;
             }
             
         } else {
-            throw new Error(`Only ${supported_premises.join(', ')} premises currently supported`)
+            throw new Error(`Only ${supported_premises.join(', ')} premises currently supported`);
         }
     }
 
@@ -53,7 +53,7 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         let is_first_group = true;
         for (const condition_group of conditions) {
             if(!is_first_group) {
-                q += ' or'
+                q += ' or';
             } 
             let is_first_condition = true;
             for(const condition of condition_group) {
@@ -65,13 +65,13 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
                     } 
                     
                 } else {
-                    q += ' and '
+                    q += ' and ';
                 }
 
-                q += condition_query
+                q += condition_query;
             }
             if (is_first_group) {
-                is_first_group = false
+                is_first_group = false;
             }
         }
 
@@ -81,9 +81,9 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
             q,
             pageSize: 1000,
             fields: 'nextPageToken, files(parents, id, name)'
-        })
+        });
 
-        return res.data.files as File[]
+        return res.data.files as File[];
     }
 
     async moveFiles(files: drive_v3.Schema$File[] | string[], target_folder_id: string) {
@@ -99,29 +99,29 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
             
             //throw new Error('Only file ids are currently supported');
         } else {
-            const invalid_files = []
+            const invalid_files = [];
             for (const file of files as DriveFile[]) {
                 if (!file.parents) {
                    //
-                   invalid_files.push(file.id)
+                   invalid_files.push(file.id);
                 }
             }
             if(invalid_files.length > 0) {
                 throw new Error(
                     "Cannot move files because the following files are missing the 'parents' property: " + 
                     invalid_files.join(', ')   
-                ) 
+                ); 
             }
         }
 
-        const q = `'${target_folder.id}' in parents` 
+        const q = `'${target_folder.id}' in parents`; 
     
         const res: SortResponse = {
             successful: [],
             failed: []
         };
     
-        console.log('moving to ', target_folder)
+        console.log('moving to ', target_folder);
 
         for (const file of files as DriveFile[]) {
             try {
@@ -130,11 +130,11 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
                     fileId: file.id,
                     addParents: target_folder.id,
                     removeParents: file.parents.join(',')
-                })
-                res.successful.push(file.id)
+                });
+                res.successful.push(file.id);
             } catch (e) {
-                console.error(`Could not move file ${fileStr(file)} to folder ${fileStr(target_folder)}`)
-                res.failed.push(file.id)
+                console.error(`Could not move file ${fileStr(file)} to folder ${fileStr(target_folder)}`);
+                res.failed.push(file.id);
             }
         }
     
@@ -143,19 +143,19 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
     async deleteFiles(files: string[] | drive_v3.Schema$File[]) {
 
-        let file_ids = []
+        let file_ids = [];
 
         if (typeof files[0] === 'string') {
             file_ids = files;
         } else {
-            file_ids = (files as DriveFile[]).map(file => file.id)
+            file_ids = (files as DriveFile[]).map(file => file.id);
         }
 
 
         const res = {
             successful: [],
             failed: []
-        }
+        };
 
         for (const file_id of file_ids) {
             try {
@@ -165,10 +165,10 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
                         trashed: true
                     }
                 });
-                res.successful.push(file_id)
+                res.successful.push(file_id);
             } catch {
-                this.logger.log('Failed to delete file ' + file_id)
-                res.failed.push(file_id)
+                this.logger.log('Failed to delete file ' + file_id);
+                res.failed.push(file_id);
             }
             
         }
@@ -178,13 +178,13 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
 
     async getFilesByIds(file_ids: string[]): Promise<DriveFile[]> {
 
-        const files = []
+        const files = [];
 
         for (const file_id of file_ids) {
             const file = (await this.drive.files.get({
                 fileId: file_id,
                 fields: 'parents, name'
-            })).data
+            })).data;
 
             files.push(file);
         }
@@ -196,9 +196,9 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
         const file = (await this.drive.files.get({
             fileId: file_id,
             fields: 'parents, name, mimeType, id'
-        })).data
+        })).data;
 
-        return file
+        return file;
     }
 
     async getFolderByName(folder_name: string): Promise<drive_v3.Schema$File> {
@@ -206,10 +206,10 @@ export default class GoogleDriveSorter extends Sorter<drive_v3.Schema$File> {
             q: `mimeType = 'application/vnd.google-apps.folder' and name = '${folder_name}'`,
             pageSize: 1,
             fields: 'files(id, name)'
-        })
+        });
     
         const folder = res.data.files[0];
     
-        return folder
+        return folder;
     }
 }

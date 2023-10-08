@@ -4,4 +4,4 @@ import {
     expect,
     test,
     it
-} from '@jest/globals'
+} from '@jest/globals';

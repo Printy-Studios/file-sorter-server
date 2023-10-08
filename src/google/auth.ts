@@ -1,5 +1,5 @@
-import * as path from 'path'
-import * as fs from 'fs'
+import * as path from 'path';
+import * as fs from 'fs';
 import { google } from 'googleapis';
 import { authenticate } from '@google-cloud/local-auth';
 import Logger from 'Logger';
@@ -9,7 +9,7 @@ import { GoogleAuth, JSONClient } from 'google-auth-library/build/src/auth/googl
 const readFile = (path: string) => {
     const content = fs.readFileSync(path, { encoding: 'utf-8'} );
     return content;
-}
+};
 
 // If modifying these scopes, delete token.json.
 const SCOPES = [
@@ -18,11 +18,11 @@ const SCOPES = [
 
 const TOKEN_PATH = path.join(process.cwd(), 'secret/token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'secret/credentials.json');
-const SERVICE_CREDENTIALS_PATH = path.join(process.cwd(), 'secret/service-account-credentials.json')
+const SERVICE_CREDENTIALS_PATH = path.join(process.cwd(), 'secret/service-account-credentials.json');
 
 function loadSavedCredentialsIfExist() {
     try {
-        const content = readFile(TOKEN_PATH)
+        const content = readFile(TOKEN_PATH);
         const credentials = JSON.parse(content);
         return google.auth.fromJSON(credentials);
     } catch (e) {
@@ -68,10 +68,10 @@ export async function auth() {
     const client = new google.auth.GoogleAuth({
         keyFile: SERVICE_CREDENTIALS_PATH,
         scopes: SCOPES
-    })
+    });
     
     if(!client) {
-        throw new Error('Failed to authorize Google service account')
+        throw new Error('Failed to authorize Google service account');
     }
 
     return client;

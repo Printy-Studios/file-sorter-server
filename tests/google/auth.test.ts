@@ -1,26 +1,26 @@
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect } from '@jest/globals';
 import { JSONClient } from 'google-auth-library/build/src/auth/googleauth';
 import { GoogleAuth } from 'google-auth-library/build/src/auth/googleauth';
 
-import { auth } from '../../src/google/auth'
+import { auth } from '../../src/google/auth';
 
 
 
 describe('auth()', () => {
     it('Should authenticate and return a valid service account client', async () => {
-        let client: GoogleAuth<JSONClient>
+        let client: GoogleAuth<JSONClient>;
 
-        let did_throw = false
+        let did_throw = false;
 
         try {
-            client = await auth()
+            client = await auth();
         } catch (e) {
-            did_throw = true
+            did_throw = true;
         }
 
-        expect(did_throw).toBeFalsy()
+        expect(did_throw).toBeFalsy();
 
-        expect(typeof client!).toBe('object')
-    })
-})
+        expect(typeof client!).toBe('object');
+    });
+});
 

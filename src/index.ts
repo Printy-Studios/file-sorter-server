@@ -1,15 +1,15 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import Logger from './Logger';
-import { localAuth, driveInstance, GoogleDriveSorter } from './google'
+import { localAuth, driveInstance, GoogleDriveSorter } from './google';
 
-const ENABLE_LOGS = true
+const ENABLE_LOGS = true;
 const SORTER_CONFIG = {
     enable_logs: true,
     logs_filter: null
-}
+};
 
-const logger = new Logger(ENABLE_LOGS, 'Server')
+const logger = new Logger(ENABLE_LOGS, 'Server');
 
 const app = express();
 
@@ -21,14 +21,14 @@ localAuth()
     .then((client) => {
         googleClient = client;
     })
-    .catch(console.error)
+    .catch(console.error);
 
-app.use(express.json())
+app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
     //googleAuth().then(console.log).catch(console.error)
-    res.send('Helloooo!')
-})
+    res.send('Helloooo!');
+});
 //
 app.post('/api/sort', async (req: Request, res: Response, next) => {
     try {
@@ -44,25 +44,25 @@ app.post('/api/sort', async (req: Request, res: Response, next) => {
             next();
         }
     
-        const drive = driveInstance(googleClient)
+        const drive = driveInstance(googleClient);
     
         const driveSorter = new GoogleDriveSorter(drive, SORTER_CONFIG);
     
     
-        const files = await driveSorter.sort(conditions, action)
+        const files = await driveSorter.sort(conditions, action);
     
-        logger.log('Sorted files')
+        logger.log('Sorted files');
     
-        res.json(files)
+        res.json(files);
     } catch (e) {
         res.json({
             message: e.message
-        }).status(500)
-        console.error(e)
+        }).status(500);
+        console.error(e);
     }
     
-})
+});
 
 app.listen(PORT, () => {
-    console.log(`FileSorter server listening on port ${PORT}`)
-})
+    console.log(`FileSorter server listening on port ${PORT}`);
+});

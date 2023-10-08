@@ -1,7 +1,7 @@
-import Logger from './Logger'
-import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition'
-import { SortAction } from '@printy/file-sorter-common/types/SortAction'
-import { File } from 'File'
+import Logger from './Logger';
+import { Condition, ConditionGroup } from '@printy/file-sorter-common/types/Condition';
+import { SortAction } from '@printy/file-sorter-common/types/SortAction';
+import { File } from 'File';
 
 
 export type SortResponse = {
@@ -9,15 +9,15 @@ export type SortResponse = {
     failed: string[]
 }
 
-const SUPPORTED_ACTIONS = ['move', 'delete']
+const SUPPORTED_ACTIONS = ['move', 'delete'];
 
 export default abstract class Sorter<FileT extends File> {
 
     logger;
 
     constructor( { enable_logs, log_filters} ) {
-        this.logger = new Logger(enable_logs, 'Sorter')
-        this.logger.filter = log_filters
+        this.logger = new Logger(enable_logs, 'Sorter');
+        this.logger.filter = log_filters;
     }
 
     async sort(conditions: ConditionGroup[], action: SortAction) {
@@ -26,7 +26,7 @@ export default abstract class Sorter<FileT extends File> {
 
         //const file_ids = files.map((file) => file.id);
 
-        this.logger.log(['Retrieved files: ', files.map(file => file.id)])
+        this.logger.log(['Retrieved files: ', files.map(file => file.id)]);
 
         let res = null;
 
@@ -38,7 +38,7 @@ export default abstract class Sorter<FileT extends File> {
         if (action.type === 'move') {
             res = await this.moveFiles(files, action.to);
         } else if (action.type === 'delete') {
-            res = await this.deleteFiles(files)
+            res = await this.deleteFiles(files);
         }
 
         return res;
@@ -49,7 +49,7 @@ export default abstract class Sorter<FileT extends File> {
      * @param { boolean } enabled 
      */
     setLogs(enabled: boolean) {
-        this.logger.enabled = enabled
+        this.logger.enabled = enabled;
     }
 
     /**
