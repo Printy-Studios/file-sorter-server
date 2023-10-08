@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals'
 import { JSONClient } from 'google-auth-library/build/src/auth/googleauth';
+import { GoogleAuth } from 'google-auth-library/build/src/auth/googleauth';
 
 import { auth } from '../../src/google/auth'
 
@@ -7,7 +8,7 @@ import { auth } from '../../src/google/auth'
 
 describe('auth()', () => {
     it('Should authenticate and return a valid service account client', async () => {
-        let client: JSONClient
+        let client: GoogleAuth<JSONClient>
 
         let did_throw = false
 

@@ -121,13 +121,9 @@ describe('TestSorter', () => {
     })
 
     describe('validateFiles()', () => {
-        it('Should return successful response if all files are valid', () => {
+        it.todo('Should return successful response if all files are valid');
 
-        })
-
-        it('Should return an error response with list of invalid files if some files are invalid', () => {
-
-        })
+        it.todo('Should return an error response with list of invalid files if some files are invalid');
     })
 
     describe('moveFiles()', () => {
