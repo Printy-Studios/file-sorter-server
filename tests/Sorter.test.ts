@@ -151,7 +151,9 @@ describe('TestSorter', () => {
                 folder: 123
             };
             // @ts-ignore
-            expect(testSorter.validateFiles([INCORRECT_FILE]));
+            expect(testSorter.getFileIDS([INCORRECT_FILE])).toThrow(
+`Could not get file ids: validation failed for files: [123]`
+            );
         });
     });
 
