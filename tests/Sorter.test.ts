@@ -84,7 +84,23 @@ class TestSorter extends Sorter<TestFile> {
     }
 
     getFileIDS(files: TestFile[]): string[] {
+        const INCORRECT_FILES = this.validateFiles(files);
 
+        if (INCORRECT_FILES) {
+            throw new Error(
+                `Could not get file IDs: validation \
+                failed for files: [${INCORRECT_FILES.join(',')}]`
+            );
+        }
+
+
+        const ids: string[] = [];
+
+        for (const FILE of files) {
+            ids.push(FILE.id);
+        }
+
+        return ids;
     }
 
 
