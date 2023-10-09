@@ -173,7 +173,7 @@ describe('TestSorter', () => {
             };
             // @ts-ignore
             expect(testSorter.getFileIDS([INCORRECT_FILE])).toThrow(
-`Could not get file ids: validation failed for files: [123]`
+                    `Could not get file IDs: validation failed for files: [123]`
             );
         });
     });
