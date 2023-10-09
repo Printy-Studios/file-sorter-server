@@ -16,7 +16,9 @@ describe('driveInstance()', () => {
     });
 
     it('Should throw error if auth client is invalid', () => {
+        /*eslint-disable*/
         const invalid_client = 'hello' as any;
+        /*eslint-enable*/
         
         const driveInstanceFn = () => {
             return driveInstance(invalid_client);

@@ -83,10 +83,20 @@ class TestSorter extends Sorter<TestFile> {
         return res;
     }
 
+    getFileIDS(files: TestFile[]): string[] {
+
+    }
+
+
     validateFiles(files: TestFile[]): TestFile[] {
         const res: TestFile[] = [];
         for(const file of files) {
-            if(!file.id){
+            if(
+                !file.id ||
+                typeof file.id !== 'string' ||
+                !file.folder ||
+                typeof file.folder !== 'string'
+            ){
                 res.push(file);
             }
         }
@@ -106,8 +116,47 @@ describe('TestSorter', () => {
         testSorter = new TestSorter({enable_logs: true, log_filters: 'info'});
     });
 
+    describe('getFileIDs()', () => {
+
+        const validateFilesSpy = jest.spyOn(testSorter, 'validateFiles');
+
+        it('Should return an array of file ids according to passed files', () => {
+
+            const FILE_IDS: string[] = [
+                '123',
+                '321',
+                'another_id',
+                'yet_another_id'
+            ];
+
+            const FILES: TestFile[] = FILE_IDS.map(id => ({
+                id,
+                folder: 'placeholder'
+            }));
+
+            const RETURNED_IDS = testSorter.getFileIDS(FILES);
+
+            const WERE_ALL_RETURNED = RETURNED_IDS.every(id => FILE_IDS.includes(id));
+
+            expect(WERE_ALL_RETURNED).toBeTruthy();
+        });
+
+        it('Should call validateFiles() method', () => {
+            expect(validateFilesSpy).toHaveBeenCalled();
+        });
+
+        it('Should throw if validation failed', () => {
+            const INCORRECT_FILE = {
+                id: [123],
+                folder: 123
+            };
+            // @ts-ignore
+            expect(testSorter.validateFiles([INCORRECT_FILE]));
+        });
+    });
+
     describe('getFilesByIds()', () => {
-        it('Should return array files by provided ids', () => {
+        it('Should return an array of files by provided ids', () => {
             const file_ids = ['1', '3', '999'];
 
             const files = testSorter.getFilesByIds(file_ids);
@@ -121,9 +170,81 @@ describe('TestSorter', () => {
     });
 
     describe('validateFiles()', () => {
-        it.todo('Should return successful response if all files are valid');
+        it('Should return successful response if all files are valid', () => {
+            const FILES: TestFile[] = [
+                {
+                    id: '123',
+                    folder: 'folder1'
+                },
+                {
+                    id: '321',
+                    folder: 'folder2'
+                },
+                {
+                    id: 'hello',
+                    folder: 'folder3'
+                }
+            ];
 
-        it.todo('Should return an error response with list of invalid files if some files are invalid');
+            const res = testSorter.validateFiles(FILES);
+
+            expect(Array.isArray(res)).toBeTruthy();
+
+            expect(res.length).toEqual(0);
+        });
+
+        it('Should return an error response with list of invalid files if some files are invalid', () => {
+            /*eslint-disable*/
+            const ERR_FILES: any[] = [
+                {
+                    folder: 'folder1'
+                },
+                {
+                    id: 123,
+                    folder: 'folder1'
+                },
+                {
+                    id: 'id'
+                },
+                {
+                    id: 'id',
+                    folder: 123
+                },
+                
+            ];
+
+            const NO_ERR_FILES: any[] = [
+                {
+                    id: '321',
+                    folder: 'folder2'
+                },
+                {
+                    id: 'hello',
+                    folder: 'folder3'
+                },
+                {
+                    id: '321',
+                    folder: 'folder2'
+                },
+                {
+                    id: 'hello',
+                    folder: 'folder3'
+                }
+            ];
+
+            const ALL_FILES = [...ERR_FILES, ...NO_ERR_FILES]
+            /*eslint-enable*/
+
+            const res = testSorter.validateFiles(ALL_FILES);
+
+            console.log(res);
+
+            expect(res.length).toEqual(4);
+
+            for(const file of res) {
+                expect(ERR_FILES.includes(file)).toBeTruthy();
+            }
+        });
     });
 
     describe('moveFiles()', () => {
@@ -162,20 +283,27 @@ describe('TestSorter', () => {
             expect(were_moved).toBeTruthy();
         });
 
-        it('Should return failed files and not move them if there are any', () => {
+        it.todo('Should return failed files and not move them if there are any');
+    });
 
-        });
+    describe('deleteFiles()', () => {
+        it.todo('todo');
+    });
+
+    describe('getFilesByConditions()', () => {
+        it.todo('todo');
     });
 
     describe('Logs should not show up if they are disabled', () => {
+        it('Should not show logs if they are disabled', () => {
+            const log_spy = jest.spyOn(console, 'log');
 
-        let log_spy = jest.spyOn(console, 'log');
+            testSorter.setLogs(false);
 
-        testSorter.setLogs(false);
+            log_spy.mockClear();
+            testSorter.moveFiles(['1', '2', '3'], 'placeholder');
 
-        log_spy.mockClear();
-        testSorter.moveFiles(['1', '2', '3'], 'placeholder');
-
-        expect(log_spy).not.toHaveBeenCalled();
+            expect(log_spy).not.toHaveBeenCalled();
+        });
     });
 });
