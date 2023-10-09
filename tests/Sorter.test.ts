@@ -193,7 +193,7 @@ describe('TestSorter', () => {
     });
 
     describe('validateFiles()', () => {
-        it('Should return successful response if all files are valid', () => {
+        it('Should return null if all files are valid', () => {
             const FILES: TestFile[] = [
                 {
                     id: '123',
@@ -211,12 +211,11 @@ describe('TestSorter', () => {
 
             const res = testSorter.validateFiles(FILES);
 
-            expect(Array.isArray(res)).toBeTruthy();
+            expect(res).toBeNull();
 
-            expect(res.length).toEqual(0);
         });
 
-        it('Should return an error response with list of invalid files if some files are invalid', () => {
+        it('Should return an error response with an array of invalid files if some files are invalid', () => {
             /*eslint-disable*/
             const ERR_FILES: any[] = [
                 {
@@ -258,9 +257,7 @@ describe('TestSorter', () => {
             const ALL_FILES = [...ERR_FILES, ...NO_ERR_FILES]
             /*eslint-enable*/
 
-            const res = testSorter.validateFiles(ALL_FILES);
-
-            console.log(res);
+            const res = testSorter.validateFiles(ALL_FILES) as TestFile[];
 
             expect(res.length).toEqual(4);
 
