@@ -78,7 +78,9 @@ export default abstract class Sorter<FileT extends File> {
 
     /**
      * Validate whether provided files match the FileT schema
+     * 
+     * @returns array of incorrect files or null if all files are valid
      */
-    abstract validateFiles(files: FileT[]): FileT[];
+    abstract validateFiles(files: FileT[]): FileT[] | null;
 
 }
