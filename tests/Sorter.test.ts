@@ -104,7 +104,12 @@ class TestSorter extends Sorter<TestFile> {
     }
 
 
-    validateFiles(files: TestFile[]): TestFile[] {
+    /**
+     * Validates whether provided files match the TestFiles schema
+     * @param files 
+     * @returns Array of incorrect files or null if no incorrect files are found
+     */
+    validateFiles(files: TestFile[]): TestFile[] | null {
         const res: TestFile[] = [];
         for(const file of files) {
             if(
@@ -116,7 +121,7 @@ class TestSorter extends Sorter<TestFile> {
                 res.push(file);
             }
         }
-        return res;
+        return res.length > 0 ? res : null;
     }
 
     getFilesByIds(file_ids: string[]) {
