@@ -38,13 +38,42 @@ const DEFAULT_FILES: TestFile[] = [
 
 class TestSorter extends Sorter<TestFile> {
 
-    files: TestFile[] = DEFAULT_FILES;
+    files: TestFile[] = [...DEFAULT_FILES];
 
     async deleteFiles(files: File[] | string[]): Promise<SortResponse> {
-        return {
+
+        if(!Array.isArray(files)) {
+            throw new Error('files arg must be an array');
+        }
+
+        let file_ids: string[];
+
+        if(typeof files[0] !== 'string') {
+            const INVALID_FILES = this.validateFiles(files as TestFile[]);
+            if(INVALID_FILES) {
+                throw new Error(`File validation failed for files: [${INVALID_FILES.join(',')}]`);
+            }
+            file_ids = this.getFileIDS(files as TestFile[]);
+        } else {
+            file_ids = files as string[];
+        }
+
+        const res: SortResponse = {
             successful: [],
             failed: []
         };
+
+        for(const file_id of file_ids) {
+            const FILE_INDEX = this.files.findIndex(file => file.id === file_id);
+            if(FILE_INDEX > -1) {
+                this.files.splice(FILE_INDEX, 1);
+                res.successful.push(file_id);
+            } else {
+                res.failed.push(file_id);
+            }
+        }
+
+        return res;
     }
 
     async getFilesByConditions(conditions: ConditionGroup[]): Promise<TestFile[]> {
