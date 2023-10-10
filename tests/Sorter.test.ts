@@ -49,9 +49,9 @@ class TestSorter extends Sorter<TestFile> {
         let file_ids: string[];
 
         if(typeof files[0] !== 'string') {
-            const INVALID_FILES = this.validateFiles(files as TestFile[]);
-            if(INVALID_FILES) {
-                throw new Error(`File validation failed for files: [${INVALID_FILES.join(',')}]`);
+            const INCORRECT_FILES = this.validateFiles(files as TestFile[]);
+            if(INCORRECT_FILES) {
+                throw new Error(`File validation failed for files: [${INCORRECT_FILES.join(',')}]`);
             }
             file_ids = this.getFileIDS(files as TestFile[]);
         } else {
