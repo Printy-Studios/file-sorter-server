@@ -442,6 +442,34 @@ describe('TestSorter', () => {
         it('Should run the validateFiles() method', () => {
             expect(validateFilesSpy).toHaveBeenCalled();
         });
+
+        it('Should throw error if file validation failed or if argument is not an array', () => {
+
+            const INCORRECT_FILES = [
+                {
+                    id: 123,
+                    folder: 'aaa'
+                },{
+                    folder: 123
+                }
+            ];
+
+            //@ts-ignore
+            expect(() => testSorter.deleteFiles(INCORRECT_FILES)).rejects.toThrow();
+
+            const INCORRECT_IDS = [123, {}];
+
+            //@ts-ignore
+            expect(() => testSorter.deleteFiles(INCORRECT_IDS)).rejects.toThrow();
+
+            const NOT_ARRAY = 123;
+
+            //@ts-ignore
+            expect(() => testSorter.deleteFiles(NOT_ARRAY)).rejects.toThrow('Files arg must be an array');
+
+
+
+        });
     });
 
     describe('getFilesByConditions()', () => {
