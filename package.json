@@ -6,7 +6,8 @@
   "scripts": {
     "start-single": "ts-node ./src/index.ts",
     "start": "ts-node-dev --respawn ./src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "link": "npm link @printy/file-sorter-common"
   },
   "repository": {
     "type": "git",
