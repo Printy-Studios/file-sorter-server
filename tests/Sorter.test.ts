@@ -385,7 +385,6 @@ describe('TestSorter', () => {
 
             //First check if files to delete are currently in the testSorter's files list
             let are_files_present = FILE_IDS.every(file_id => testSorter.files.findIndex(file => file.id === file_id) > -1);//testSorter.files.every(file => FILE_IDS.includes(file.id));
-            console.log(testSorter.files);
             expect(are_files_present).toBeTruthy();
 
             const res = await testSorter.deleteFiles(FILE_IDS);
@@ -415,7 +414,6 @@ describe('TestSorter', () => {
             ];
 
             const FILE_IDS = FILES.map(file => file.id);
-            console.log(testSorter.files);
             //First check if files to delete are currently in the testSorter's files list
             let are_files_present = FILE_IDS.every(file_id => testSorter.files.findIndex(file => file.id === file_id) > -1);
             expect(are_files_present).toBeTruthy();
