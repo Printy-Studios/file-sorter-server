@@ -53,7 +53,7 @@ class TestSorter extends Sorter<TestFile> {
             if(INCORRECT_FILES) {
                 throw new Error(`File validation failed for files: [${INCORRECT_FILES.join(',')}]`);
             }
-            file_ids = this.getFileIDS(files as TestFile[]);
+            file_ids = this.getFileIDs(files as TestFile[]);
         } else {
             file_ids = files as string[];
         }
@@ -112,7 +112,7 @@ class TestSorter extends Sorter<TestFile> {
         return res;
     }
 
-    getFileIDS(files: TestFile[]): string[] {
+    getFileIDs(files: TestFile[]): string[] {
         const INCORRECT_FILES = this.validateFiles(files);
 
         if (INCORRECT_FILES) {
@@ -153,7 +153,7 @@ failed for files: [${INCORRECT_FILES.map(file => file.id).join(',')}]`
         return res.length > 0 ? res : null;
     }
 
-    getFilesByIds(file_ids: string[]) {
+    getFilesByIDs(file_ids: string[]) {
         const ERR_MESSAGE = `Passed IDs should be an array of strings`;
         if(!Array.isArray(file_ids)) {
             throw new Error(ERR_MESSAGE);
@@ -165,7 +165,14 @@ failed for files: [${INCORRECT_FILES.map(file => file.id).join(',')}]`
     }
 }
 
+//#TODO: Remove this testSorter variable and use the prepare() function in tests instead
 let testSorter = new TestSorter({ enable_logs: true, log_filters: 'info'});
+
+// const prepare = () => {
+//     return {
+//         testSorter: new TestSorter({enable_logs: true, log_filters: 'info'})
+//     };
+// };
 
 describe('TestSorter', () => {
 
@@ -173,9 +180,9 @@ describe('TestSorter', () => {
         testSorter = new TestSorter({enable_logs: true, log_filters: 'info'});
     });
 
-    describe('getFileIDs()', () => {
+    const validateFilesSpy = jest.spyOn(TestSorter.prototype, 'validateFiles');
 
-        const validateFilesSpy = jest.spyOn(testSorter, 'validateFiles');
+    describe('getFileIDs()', () => {
 
         it('Should return an array of file ids according to passed files', () => {
 
@@ -191,11 +198,12 @@ describe('TestSorter', () => {
                 folder: 'placeholder'
             }));
 
-            const RETURNED_IDS = testSorter.getFileIDS(FILES);
+            const RETURNED_IDS = testSorter.getFileIDs(FILES);
 
             const WERE_ALL_RETURNED = RETURNED_IDS.every(id => FILE_IDS.includes(id));
 
             expect(WERE_ALL_RETURNED).toBeTruthy();
+
         });
 
         it('Should call validateFiles() method', () => {
@@ -208,8 +216,8 @@ describe('TestSorter', () => {
                 folder: 123
             };
             // @ts-ignore
-            expect(testSorter.getFileIDS([INCORRECT_FILE])).toThrow(
-                    `Could not get file IDs: validation failed for files: [123]`
+            expect(() => testSorter.getFileIDS([INCORRECT_FILE])).toThrow(
+                `Could not get file IDs: validation failed for files: [123]`
             );
         });
     });
@@ -218,13 +226,32 @@ describe('TestSorter', () => {
         it('Should return an array of files by provided ids', () => {
             const file_ids = ['1', '3', '999'];
 
-            const files = testSorter.getFilesByIds(file_ids);
+            const files = testSorter.getFilesByIDs(file_ids);
 
             expect(Array.isArray(files)).toBeTruthy();
 
             expect(files.length).toEqual(2);
 
 
+        });
+
+        it('Should throw if provided IDs is not an array of strings', () => {
+
+            /*eslint-disable*/
+            let INCORRECT_IDS: any = [123, {}, '123'];
+            /*eslint-enable*/
+
+            const ERR_MESSAGE = `Passed IDs should be an array of strings`;
+
+            expect(() => testSorter.getFilesByIDs(INCORRECT_IDS)).toThrow(
+                ERR_MESSAGE
+            );
+
+            INCORRECT_IDS = 123;
+
+            expect(() => testSorter.getFilesByIDs(INCORRECT_IDS)).toThrow(
+                ERR_MESSAGE
+            );
         });
     });
 
@@ -324,7 +351,7 @@ describe('TestSorter', () => {
 
             await testSorter.moveFiles(FILES_TO_MOVE, TARGET_FOLDER);
 
-            let moved_files = testSorter.getFilesByIds(FILES_TO_MOVE_IDS);
+            let moved_files = testSorter.getFilesByIDs(FILES_TO_MOVE_IDS);
 
             let were_moved = moved_files.every(file => file.folder === TARGET_FOLDER);
 
@@ -332,7 +359,7 @@ describe('TestSorter', () => {
 
             await testSorter.moveFiles(FILES_TO_MOVE_IDS, TARGET_FOLDER_2);
 
-            moved_files = testSorter.getFilesByIds(FILES_TO_MOVE_IDS);
+            moved_files = testSorter.getFilesByIDs(FILES_TO_MOVE_IDS);
 
             were_moved = moved_files.every(file => file.folder === TARGET_FOLDER_2);
 
@@ -343,7 +370,80 @@ describe('TestSorter', () => {
     });
 
     describe('deleteFiles()', () => {
-        it.todo('todo');
+
+        beforeEach(() => {
+            testSorter = new TestSorter({enable_logs: true, log_filters: 'info'});
+        });
+
+        validateFilesSpy.mockClear();
+        
+        it('Should remove specified files by array of IDs and return IDS of those files', async () => {
+
+            //const { testSorter: _testSorter } = prepare();
+            
+            const FILE_IDS = ['1', '2', '4'];
+
+            //First check if files to delete are currently in the testSorter's files list
+            let are_files_present = FILE_IDS.every(file_id => testSorter.files.findIndex(file => file.id === file_id) > -1);//testSorter.files.every(file => FILE_IDS.includes(file.id));
+            console.log(testSorter.files);
+            expect(are_files_present).toBeTruthy();
+
+            const res = await testSorter.deleteFiles(FILE_IDS);
+
+            are_files_present = FILE_IDS.every(file_id => testSorter.files.findIndex(file => file.id === file_id) > -1);
+            expect(are_files_present).toBeFalsy();
+
+            expect(res.successful.length).toBe(3);
+            expect(res.failed.length).toBe(0);
+        });
+
+        it('Should remove specified files by array of File type', async () => {
+
+            const FILES: TestFile[] = [
+                {
+                    id: '1',
+                    folder: 'placeholder'
+                }, 
+                {
+                    id: '2',
+                    folder: 'placeholder'
+                },
+                {
+                    id: '4',
+                    folder: 'placeholder'
+                }
+            ];
+
+            const FILE_IDS = FILES.map(file => file.id);
+            console.log(testSorter.files);
+            //First check if files to delete are currently in the testSorter's files list
+            let are_files_present = FILE_IDS.every(file_id => testSorter.files.findIndex(file => file.id === file_id) > -1);
+            expect(are_files_present).toBeTruthy();
+
+            const res = await testSorter.deleteFiles(FILES);
+
+            are_files_present = FILE_IDS.every(file_id => testSorter.files.findIndex(file => file.id === file_id) > -1);
+            expect(are_files_present).toBeFalsy();
+
+            expect(res.successful.length).toBe(3);
+            expect(res.failed.length).toBe(0);
+        });
+
+        it(`Should return file IDs in 'failed' property if the file deletion failed`, async () => {
+            const FILE_IDS = ['99', '100'];
+
+            const res = await testSorter.deleteFiles(FILE_IDS);
+
+            const ARE_IDS_IN_RESPONSE = res.failed.every(id => FILE_IDS.includes(id));
+            
+            expect(ARE_IDS_IN_RESPONSE).toBeTruthy();
+            expect(res.failed.length).toBe(2);
+            expect(res.successful.length).toBe(0);
+        });
+
+        it('Should run the validateFiles() method', () => {
+            expect(validateFilesSpy).toHaveBeenCalled();
+        });
     });
 
     describe('getFilesByConditions()', () => {
