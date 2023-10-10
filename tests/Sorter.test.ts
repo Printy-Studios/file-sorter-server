@@ -117,8 +117,8 @@ class TestSorter extends Sorter<TestFile> {
 
         if (INCORRECT_FILES) {
             throw new Error(
-                `Could not get file IDs: validation \
-                failed for files: [${INCORRECT_FILES.join(',')}]`
+`Could not get file IDs: validation \
+failed for files: [${INCORRECT_FILES.map(file => file.id).join(',')}]`
             );
         }
 
