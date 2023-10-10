@@ -43,7 +43,7 @@ class TestSorter extends Sorter<TestFile> {
     async deleteFiles(files: File[] | string[]): Promise<SortResponse> {
 
         if(!Array.isArray(files)) {
-            throw new Error('files arg must be an array');
+            throw new Error('Files arg must be an array');
         }
 
         let file_ids: string[];
