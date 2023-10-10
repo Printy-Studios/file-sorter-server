@@ -77,10 +77,76 @@ class TestSorter extends Sorter<TestFile> {
     }
 
     async getFilesByConditions(conditions: ConditionGroup[]): Promise<TestFile[]> {
-        return [{
-            id: '1',
-            folder: '1'
-        }];
+
+        const converted_condition_groups = [];
+
+        const filterFns: ((file: TestFile) => boolean)[] = [];
+
+        for(const condition_group of conditions) {
+            converted_condition_groups.push();
+            for(const condition of condition_group) {
+
+                let cond: string = condition.condition;
+
+                if(cond === '=') {
+                    cond = '==';
+                }
+
+                let value: string | number = condition.value;
+
+                
+
+                filterFns.push((file: TestFile) => {
+                    const premise_map = {
+                        name: 'name',
+                        filesize: 'filesize',
+                        type: 'type'
+                    };
+                    const premise = premise_map[condition.premise];
+                    if(cond === 'contains' && typeof file[premise] === 'string') {
+                        return file[premise].contains(value);
+                    }
+                    if(typeof value === 'string') {
+                        value = `"${value}"`;
+                    }
+                    return eval(`file.${premise_map[condition.premise]} ${cond} ${value}`);
+                });
+
+                // switch(condition.condition) {
+                //     case 'contains': {
+                //         break;
+                //     }
+                //     case '!=': {
+                //         break;
+                //     }
+                //     case '=': {
+                //         break;
+                //     }
+                //     case '>': {
+                //         break;
+                //     }
+                //     case '<': {
+                //         break;
+                //     }
+                //     case '>=': {
+                //         break;
+                //     }
+                //     case '<=': {
+                //         break;
+                //     }
+                    
+                // }
+            }
+        }
+
+
+        let files = [...this.files];
+
+        for(const filterFn of filterFns) {
+            files = files.filter(filterFn);
+        }
+
+        return files;
     }
 
     async moveFiles(files: string[] | TestFile[], target_folder_id: string): Promise<SortResponse> {
