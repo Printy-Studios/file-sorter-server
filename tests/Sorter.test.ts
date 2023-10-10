@@ -154,6 +154,13 @@ failed for files: [${INCORRECT_FILES.map(file => file.id).join(',')}]`
     }
 
     getFilesByIds(file_ids: string[]) {
+        const ERR_MESSAGE = `Passed IDs should be an array of strings`;
+        if(!Array.isArray(file_ids)) {
+            throw new Error(ERR_MESSAGE);
+        }
+        if(!file_ids.every(id => typeof id === 'string')) {
+            throw new Error(ERR_MESSAGE);
+        }
         return this.files.filter(file => file_ids.includes(file.id));
     }
 }
