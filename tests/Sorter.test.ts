@@ -1,12 +1,8 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
-import Sorter, { SortResponse } from '../src/Sorter';
-import { File } from '../src/File';
+import TestSorter, { TestFile } from './TestSorter';
 import { ConditionGroup } from '@printy/file-sorter-common/types/Condition';
-
-type TestFile = File & {
-    folder: string
-}
+import { SortAction } from '@printy/file-sorter-common/types/SortAction';
 
 const DEFAULT_FILES: TestFile[] = [
     {
@@ -36,200 +32,7 @@ const DEFAULT_FILES: TestFile[] = [
     },
 ];
 
-class TestSorter extends Sorter<TestFile> {
 
-    files: TestFile[] = [...DEFAULT_FILES];
-
-    async deleteFiles(files: File[] | string[]): Promise<SortResponse> {
-
-        if(!Array.isArray(files)) {
-            throw new Error('Files arg must be an array');
-        }
-
-        let file_ids: string[];
-
-        if(typeof files[0] !== 'string') {
-            const INCORRECT_FILES = this.validateFiles(files as TestFile[]);
-            if(INCORRECT_FILES) {
-                throw new Error(`File validation failed for files: [${INCORRECT_FILES.join(',')}]`);
-            }
-            file_ids = this.getFileIDs(files as TestFile[]);
-        } else {
-            file_ids = files as string[];
-        }
-
-        const res: SortResponse = {
-            successful: [],
-            failed: []
-        };
-
-        for(const file_id of file_ids) {
-            const FILE_INDEX = this.files.findIndex(file => file.id === file_id);
-            if(FILE_INDEX > -1) {
-                this.files.splice(FILE_INDEX, 1);
-                res.successful.push(file_id);
-            } else {
-                res.failed.push(file_id);
-            }
-        }
-
-        return res;
-    }
-
-    async getFilesByConditions(conditions: ConditionGroup[]): Promise<TestFile[]> {
-
-        const converted_condition_groups = [];
-
-        const filterFns: ((file: TestFile) => boolean)[] = [];
-
-        for(const condition_group of conditions) {
-            converted_condition_groups.push();
-            for(const condition of condition_group) {
-
-                let cond: string = condition.condition;
-
-                if(cond === '=') {
-                    cond = '==';
-                }
-
-                let value: string | number = condition.value;
-
-                
-
-                filterFns.push((file: TestFile) => {
-                    const premise_map = {
-                        name: 'name',
-                        filesize: 'filesize',
-                        type: 'type'
-                    };
-                    const premise = premise_map[condition.premise];
-                    if(cond === 'contains' && typeof file[premise] === 'string') {
-                        return file[premise].contains(value);
-                    }
-                    if(typeof value === 'string') {
-                        value = `"${value}"`;
-                    }
-                    return eval(`file.${premise_map[condition.premise]} ${cond} ${value}`);
-                });
-
-                // switch(condition.condition) {
-                //     case 'contains': {
-                //         break;
-                //     }
-                //     case '!=': {
-                //         break;
-                //     }
-                //     case '=': {
-                //         break;
-                //     }
-                //     case '>': {
-                //         break;
-                //     }
-                //     case '<': {
-                //         break;
-                //     }
-                //     case '>=': {
-                //         break;
-                //     }
-                //     case '<=': {
-                //         break;
-                //     }
-                    
-                // }
-            }
-        }
-
-
-        let files = [...this.files];
-
-        for(const filterFn of filterFns) {
-            files = files.filter(filterFn);
-        }
-
-        return files;
-    }
-
-    async moveFiles(files: string[] | TestFile[], target_folder_id: string): Promise<SortResponse> {
-        const res: SortResponse = {
-            successful: [],
-            failed: []
-        };
-        let file_ids: string[] = [];
-        if(typeof files[0] === 'string') {
-            file_ids = files as string[];
-        } else {
-            for(const file of files) {
-                const file_id = (file as File).id;
-                file_ids.push(file_id);
-            }
-        }
-
-        for(const file_id of file_ids) {
-            const index = this.files.findIndex(file => file.id === file_id);
-            if(index > -1) {
-                this.files[index].folder = target_folder_id;
-                res.successful.push(file_id);
-            } else {
-                res.failed.push(file_id);
-            }
-            
-        }
-
-        return res;
-    }
-
-    getFileIDs(files: TestFile[]): string[] {
-        const INCORRECT_FILES = this.validateFiles(files);
-
-        if (INCORRECT_FILES) {
-            throw new Error(
-`Could not get file IDs: validation \
-failed for files: [${INCORRECT_FILES.map(file => file.id).join(',')}]`
-            );
-        }
-
-
-        const ids: string[] = [];
-
-        for (const FILE of files) {
-            ids.push(FILE.id);
-        }
-
-        return ids;
-    }
-
-
-    /**
-     * Validates whether provided files match the TestFiles schema
-     * @param files 
-     * @returns Array of incorrect files or null if no incorrect files are found
-     */
-    validateFiles(files: TestFile[]): TestFile[] | null {
-        const res: TestFile[] = [];
-        for(const file of files) {
-            if(
-                !file.id ||
-                typeof file.id !== 'string' ||
-                !file.folder ||
-                typeof file.folder !== 'string'
-            ){
-                res.push(file);
-            }
-        }
-        return res.length > 0 ? res : null;
-    }
-
-    getFilesByIDs(file_ids: string[]) {
-        const ERR_MESSAGE = `Passed IDs should be an array of strings`;
-        if(!Array.isArray(file_ids)) {
-            throw new Error(ERR_MESSAGE);
-        }
-        if(!file_ids.every(id => typeof id === 'string')) {
-            throw new Error(ERR_MESSAGE);
-        }
-        return this.files.filter(file => file_ids.includes(file.id));
-    }
-}
 
 //#TODO: Remove this testSorter variable and use the prepare() function in tests instead
 let testSorter = new TestSorter({ enable_logs: true, log_filters: 'info'});
@@ -240,11 +43,14 @@ let testSorter = new TestSorter({ enable_logs: true, log_filters: 'info'});
 //     };
 // };
 
+beforeEach(() => {
+    testSorter = new TestSorter({enable_logs: true, log_filters: 'info'});
+    testSorter.files = [...DEFAULT_FILES];
+});
+
 describe('TestSorter', () => {
 
-    beforeEach(() => {
-        testSorter = new TestSorter({enable_logs: true, log_filters: 'info'});
-    });
+    
 
     const validateFilesSpy = jest.spyOn(TestSorter.prototype, 'validateFiles');
 
@@ -539,7 +345,30 @@ describe('TestSorter', () => {
     });
 
     describe('getFilesByConditions()', () => {
-        it.todo('todo');
+        it('Should return files according to conditions #1', async () => {
+            
+            const VALUE = 'File';
+
+            const CONDITIONS_1:ConditionGroup[] = [
+                [
+                    {
+                        premise: 'name',
+                        condition: 'contains',
+                        value: VALUE
+                    }
+                ]
+            ];
+
+            const FILES: TestFile[] = await testSorter.getFilesByConditions(CONDITIONS_1);
+
+            const ACTUAL_FILES = testSorter.files.filter(file => file.name?.includes(VALUE));
+
+            const IS_MATCH = FILES.every(FILE => ACTUAL_FILES.some(ACTUAL_FILE => ACTUAL_FILE === FILE));
+
+            expect(IS_MATCH).toBeTruthy();
+            
+        });
+
     });
 
     describe('Logs should not show up if they are disabled', () => {
@@ -552,6 +381,68 @@ describe('TestSorter', () => {
             testSorter.moveFiles(['1', '2', '3'], 'placeholder');
 
             expect(log_spy).not.toHaveBeenCalled();
+        });
+    });
+});
+
+describe('Sorter', () => {
+    describe('sort()', () => {
+        it('Should move correctly', async () => {
+
+            const VALUE = 'File';
+
+            const CONDITIONS: ConditionGroup[] = [
+                [
+                    {
+                        premise: 'name',
+                        condition: 'contains',
+                        value: VALUE   
+                    }
+                ]
+                
+            ];
+
+            const FOLDER_NAME = 'new_folder';
+
+            const ACTION: SortAction = {
+                type: 'move',
+                to: FOLDER_NAME
+            };
+
+            await testSorter.sort(CONDITIONS, ACTION);
+
+            const FILES: TestFile[] = await testSorter.getFilesByConditions(CONDITIONS);
+
+            const WERE_FILES_MOVED = FILES.every(FILE => FILE.folder === FOLDER_NAME);
+
+            expect(WERE_FILES_MOVED).toBeTruthy();
+        });
+
+        it('Should delete correctly', async () => {
+            const VALUE = 'File';
+
+            const CONDITIONS: ConditionGroup[] = [
+                [
+                    {
+                        premise: 'name',
+                        condition: 'contains',
+                        value: VALUE   
+                    }
+                ]
+                
+            ];
+
+            const ACTION: SortAction = {
+                type: 'delete'
+            };
+
+            await testSorter.sort(CONDITIONS, ACTION);
+
+            const FILES: TestFile[] = await testSorter.getFilesByConditions(CONDITIONS);
+
+            const WERE_FILES_DELETED = FILES.length === 0;
+
+            expect(WERE_FILES_DELETED).toBeTruthy();
         });
     });
 });
